@@ -216,7 +216,8 @@ class Mustache_Context
                         // Note that is_callable() *will not work here*
                         // See https://github.com/bobthecow/mustache.php/wiki/Magic-Methods
                         if (method_exists($frame, $id)) {
-                            return $frame->$id();
+                            // pass in the context to the frame so we can grab information about it.
+                            return $frame->$id($this);
                         }
 
                         if (isset($frame->$id)) {

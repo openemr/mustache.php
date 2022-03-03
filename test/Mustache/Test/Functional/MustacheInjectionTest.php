@@ -35,6 +35,14 @@ class Mustache_Test_Functional_MustacheInjectionTest extends PHPUnit_Framework_T
         $this->assertEquals($expect, $this->mustache->render($tpl, $data));
     }
 
+    public function testObjectInjection()
+    {
+        $contextObj = new Mustache_Test_Functional_Omega();
+        // should lookup the name method that returns 'Foo' and attempt to concatenate the context variable 'b'
+        // which will lookup and return 'd' as the value.
+        $this->assertEquals('Food', $this->mustache->render('{{name}}', $contextObj));
+    }
+
     public function injectionData()
     {
         $interpolationData = array(
@@ -96,5 +104,17 @@ class Mustache_Test_Functional_MustacheInjectionTest extends PHPUnit_Framework_T
     public static function lambdaInterpolationCallbackWithContext($context)
     {
         return $context->find('b');
+    }
+}
+
+class Mustache_Test_Functional_Omega
+{
+    protected $_name = 'Foo';
+    public $b = 'd';
+
+    public function name(Mustache_Context $context)
+    {
+        $b = $context->find('b');
+        return $this->_name . $b;
     }
 }
