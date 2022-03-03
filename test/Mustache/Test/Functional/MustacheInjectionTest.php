@@ -4,6 +4,10 @@
  * This file is part of Mustache.php.
  *
  * (c) 2010-2017 Justin Hileman
+ * (c) 2022 Discover and Change, Inc.
+ * 
+ * @author Justin Hileman
+ * @author Stephen Nielson <snielson@discoverandchange.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -56,6 +60,13 @@ class Mustache_Test_Functional_MustacheInjectionTest extends PHPUnit_Framework_T
             'c' => 'FAIL',
         );
 
+        $lambdaInterpolationContextData = array(
+            'a' => array($this, 'lambdaInterpolationCallbackWithContext'),
+            'b' => '{{ c }}',
+            'c' => '{{ d }}',
+            'd' => 'FAIL',
+        );
+
         return array(
             array('{{ a }}',   $interpolationData, array(), '{{ b }}'),
             array('{{{ a }}}', $interpolationData, array(), '{{ b }}'),
@@ -68,6 +79,7 @@ class Mustache_Test_Functional_MustacheInjectionTest extends PHPUnit_Framework_T
 
             array('{{ a }}',           $lambdaInterpolationData, array(), '{{ c }}'),
             array('{{# a }}b{{/ a }}', $lambdaSectionData,       array(), '{{ c }}'),
+            array('{{ a }}', $lambdaInterpolationContextData, array(), '{{ d }}'),
         );
     }
 
@@ -79,5 +91,10 @@ class Mustache_Test_Functional_MustacheInjectionTest extends PHPUnit_Framework_T
     public static function lambdaSectionCallback($text)
     {
         return '{{ ' . $text . ' }}';
+    }
+
+    public static function lambdaInterpolationCallbackWithContext($context)
+    {
+        return $context->find('b');
     }
 }
